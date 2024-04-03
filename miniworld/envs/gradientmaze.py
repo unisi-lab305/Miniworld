@@ -10,8 +10,7 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
     """
     ## Description
 
-    Environment in which the goal is to go to a red box at the end of a
-    hallway within as few steps as possible.
+    Maze like environment.
 
     ## Action Space
 
@@ -28,7 +27,7 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
 
     ## Rewards:
 
-    +(1 - 0.2 * (step_count / max_episode_steps)) when red box reached
+    +(obs-brightness - 0.2 * (step_count / max_episode_steps))
 
     ## Arguments
 
@@ -51,22 +50,62 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
         self.action_space = spaces.Discrete(self.actions.move_forward + 1)
 
     def _gen_world(self):
-        # Create a long rectangular room
-        room = self.add_rect_room(min_x=-1, max_x=-1 + self.length, min_z=-2, max_z=2)
 
-        # Place the box at the end of the hallway
-        self.box = self.place_entity(Box(color="red"), min_x=room.max_x - 2)
-
-        # Place the agent a random distance away from the goal
-        self.place_agent(
-            dir=self.np_random.uniform(-math.pi / 4, math.pi / 4), max_x=room.max_x - 2
+        room0 = self.add_rect_room(
+            min_x=4,
+            max_x=10,
+            min_z=4,
+            max_z=10,
+            wall_tex="brick_wall",
+            no_ceiling=False
+            ,
         )
+
+        wall1 = self.add_rect_room(
+            min_x=5,
+            max_x=5,
+            min_z=5,
+            max_z=9,
+            wall_tex="gradient1",
+            no_ceiling=True,
+        )
+
+        wall2 = self.add_rect_room(
+            min_x=5,
+            max_x=9,
+            min_z=5,
+            max_z=5,
+            wall_tex="gradient1",
+            no_ceiling=True,
+        )
+
+        wall3 = self.add_rect_room(
+            min_x=9,
+            max_x=9,
+            min_z=5,
+            max_z=9,
+            wall_tex="gradient1",
+            no_ceiling=True,
+        )
+
+        wall4 = self.add_rect_room(
+            min_x=5,
+            max_x=9,
+            min_z=9,
+            max_z=9,
+            wall_tex="gradient1",
+            no_ceiling=True,
+        )
+
+        self.place_agent(room=room1, min_x=7, max_x=7, min_z=7, max_z=7)
 
     def step(self, action):
         obs, reward, termination, truncation, info = super().step(action)
-
-        if self.near(self.box):
-            reward += self._reward()
-            termination = True
+        print(type(obs))
+        print(obs.shape)
+        print(obs.min())
+        print(obs.max())
+        print(obs.mean())
+        print(reward)
 
         return obs, reward, termination, truncation, info
