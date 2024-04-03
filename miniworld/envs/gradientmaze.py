@@ -66,7 +66,7 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
             max_x=5,
             min_z=5,
             max_z=9,
-            wall_tex="gradient1",
+            wall_tex="gradient4",
             no_ceiling=True,
         )
 
@@ -75,7 +75,7 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
             max_x=9,
             min_z=5,
             max_z=5,
-            wall_tex="gradient1",
+            wall_tex="gradient3",
             no_ceiling=True,
         )
 
@@ -84,7 +84,7 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
             max_x=9,
             min_z=5,
             max_z=9,
-            wall_tex="gradient1",
+            wall_tex="gradient2",
             no_ceiling=True,
         )
 
@@ -97,15 +97,22 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
             no_ceiling=True,
         )
 
-        self.place_agent(room=room1, min_x=7, max_x=7, min_z=7, max_z=7)
+        self.place_agent(room=room0, min_x=7, max_x=7, min_z=7, max_z=7)
 
     def step(self, action):
         obs, reward, termination, truncation, info = super().step(action)
-        print(type(obs))
-        print(obs.shape)
-        print(obs.min())
-        print(obs.max())
-        print(obs.mean())
-        print(reward)
+        # print()
+        # print(type(obs))
+        # print(obs.shape)
+        # print(obs.min())
+        # print(obs.max())
+        # print(obs.mean())
+
+        # step decay
+        reward += self._reward()
+        # brightness reward
+        brightness = obs.mean()
+        norm_brightness = brightness/255.
+        reward += norm_brightness
 
         return obs, reward, termination, truncation, info
