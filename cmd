@@ -1,1 +1,1 @@
-python scripts\manual_control.py --env-name MiniWorld-Hallway-v0 --top_view
+python3 scripts/manual_control.py --env-name MiniWorld-GradientMaze-v0
