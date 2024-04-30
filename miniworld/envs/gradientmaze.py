@@ -43,7 +43,7 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
         assert length >= 2
         self.length = length
 
-        MiniWorldEnv.__init__(self, max_episode_steps=250, **kwargs)
+        MiniWorldEnv.__init__(self, max_episode_steps=100, **kwargs)
         utils.EzPickle.__init__(self, length, **kwargs)
 
         # Allow only movement actions (left/right/forward)
@@ -57,6 +57,7 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
             min_z=4,
             max_z=10,
             wall_tex="brick_wall",
+            floor_tex="brick_wall",
             no_ceiling=False
             ,
         )
@@ -101,7 +102,10 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
 
     def step(self, action):
         obs, reward, termination, truncation, info = super().step(action)
-        # print()
+        print()
+        # print(self.agent.pos)
+        # print(info)
+        # print(obs)
         # print(type(obs))
         # print(obs.shape)
         # print(obs.min())
@@ -112,7 +116,8 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
         reward += self._reward()
         # brightness reward
         brightness = obs.mean()
-        norm_brightness = brightness/255.
-        reward += norm_brightness
+        # norm_brightness = brightness/255.
+        # reward += norm_brightness
+        reward += brightness
 
         return obs, reward, termination, truncation, info
