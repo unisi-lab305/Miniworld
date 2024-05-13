@@ -6,7 +6,7 @@ from miniworld.entity import Box
 from miniworld.miniworld import MiniWorldEnv
 
 
-class GradientMaze(MiniWorldEnv, utils.EzPickle):
+class GradientMazeV0(MiniWorldEnv, utils.EzPickle):
     """
     ## Description
 
@@ -58,8 +58,7 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
             max_z=10,
             wall_tex="brick_wall",
             floor_tex="brick_wall",
-            no_ceiling=False
-            ,
+            no_ceiling=False,
         )
 
         wall1 = self.add_rect_room(
@@ -111,6 +110,155 @@ class GradientMaze(MiniWorldEnv, utils.EzPickle):
         # print(obs.min())
         # print(obs.max())
         # print(obs.mean())
+
+        # step decay
+        reward += self._reward()
+        # brightness reward
+        brightness = obs.mean()
+        # norm_brightness = brightness/255.
+        # reward += norm_brightness
+        reward += brightness
+
+        return obs, reward, termination, truncation, info
+
+
+class GradientMazeV1(MiniWorldEnv, utils.EzPickle):
+    """
+    ## Description
+
+    Maze like environment.
+
+    ## Action Space
+
+    | Num | Action                      |
+    |-----|-----------------------------|
+    | 0   | turn left                   |
+    | 1   | turn right                  |
+    | 2   | move forward                |
+
+    ## Observation Space
+
+    The observation space is an `ndarray` with shape `(obs_height, obs_width, 3)`
+    representing a RGB image of what the agents sees.
+
+    ## Rewards:
+
+    +(obs-brightness - 0.2 * (step_count / max_episode_steps))
+
+    ## Arguments
+
+    ```python
+    Hallway(length=12)
+    ```
+
+    `length`: length of the entire space
+
+    """
+
+    def __init__(self, length=12, **kwargs):
+        assert length >= 2
+        self.length = length
+
+        MiniWorldEnv.__init__(self, max_episode_steps=300, **kwargs)
+        utils.EzPickle.__init__(self, length, **kwargs)
+
+        # Allow only movement actions (left/right/forward)
+        self.action_space = spaces.Discrete(self.actions.move_forward + 1)
+
+    def _gen_world(self):
+
+        room0 = self.add_rect_room(
+            min_x=0, max_x=16,
+            min_z=0, max_z=16,
+            wall_tex="brick_wall",
+            floor_tex="brick_wall",
+            no_ceiling=False,
+        )
+
+        # wall_1
+        self.add_rect_room(
+            min_x=2, max_x=2,
+            min_z=2, max_z=14,
+            wall_tex="w1",
+            no_ceiling=True,
+        )
+
+        # wall_3
+        self.add_rect_room(
+            min_x=6, max_x=6,
+            min_z=5, max_z=10,
+            wall_tex="w3",
+            no_ceiling=True,
+        )
+
+        # wall_5
+        self.add_rect_room(
+            min_x=8, max_x=8,
+            min_z=5, max_z=8,
+            wall_tex="w5",
+            no_ceiling=True,
+        )
+
+        # wall_7
+        self.add_rect_room(
+            min_x=14, max_x=14,
+            min_z=2, max_z=8,
+            wall_tex="w7",
+            no_ceiling=True,
+        )
+
+        # wall_9
+        self.add_rect_room(
+            min_x=14, max_x=14,
+            min_z=10, max_z=14,
+            wall_tex="w9",
+            no_ceiling=True,
+        )
+
+        # wall_2
+        self.add_rect_room(
+            min_x=2, max_x=14,
+            min_z=2, max_z=2,
+            wall_tex="w2",
+            no_ceiling=True,
+        )
+
+        # wall_4
+        self.add_rect_room(
+            min_x=6, max_x=8,
+            min_z=5, max_z=5,
+            wall_tex="w4",
+            no_ceiling=True,
+        )
+
+        # wall_6
+        self.add_rect_room(
+            min_x=8, max_x=14,
+            min_z=8, max_z=8,
+            wall_tex="w6",
+            no_ceiling=True,
+        )
+
+        # wall_8
+        self.add_rect_room(
+            min_x=6, max_x=14,
+            min_z=10, max_z=10,
+            wall_tex="w8",
+            no_ceiling=True,
+        )
+
+        # wall_10
+        self.add_rect_room(
+            min_x=2, max_x=14,
+            min_z=14, max_z=14,
+            wall_tex="w10",
+            no_ceiling=True,
+        )
+
+        self.place_agent(room=room0, dir=math.pi, min_x=12, max_x=12, min_z=13, max_z=13)
+
+    def step(self, action):
+        obs, reward, termination, truncation, info = super().step(action)
 
         # step decay
         reward += self._reward()

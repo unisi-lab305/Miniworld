@@ -1,6 +1,6 @@
 import gymnasium as gym
 
-from miniworld.envs.gradientmaze import GradientMaze
+from miniworld.envs.gradientmaze import GradientMazeV0, GradientMazeV1
 from miniworld.envs.collecthealth import CollectHealth
 from miniworld.envs.fourrooms import FourRooms
 from miniworld.envs.hallway import Hallway
@@ -17,7 +17,8 @@ from miniworld.envs.wallgap import WallGap
 from miniworld.envs.ymaze import YMaze, YMazeLeft, YMazeRight
 
 __all__ = [
-    "GradientMaze",
+    "GradientMazeV0",
+    "GradientMazeV1",
     "CollectHealth",
     "FourRooms",
     "Hallway",
@@ -45,7 +46,12 @@ __all__ = [
 
 gym.register(
     id="MiniWorld-GradientMaze-v0",
-    entry_point="miniworld.envs.gradientmaze:GradientMaze",
+    entry_point="miniworld.envs.gradientmaze:GradientMazeV0",
+)
+
+gym.register(
+    id="MiniWorld-GradientMaze-v1",
+    entry_point="miniworld.envs.gradientmaze:GradientMazeV1",
 )
 
 gym.register(
